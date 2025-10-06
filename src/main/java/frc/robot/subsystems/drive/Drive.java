@@ -258,27 +258,70 @@ public class Drive extends SubsystemBase {
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
   }
 
-  public static final Map<Integer, Pose2d[]> reefTags =
+  public static final Map<Integer, Pose2d[]> RedReefTags =
       Map.of(
           6,
           new Pose2d[] {
-            new Pose2d(13.678, 2.646, Rotation2d.fromDegrees(120)),
-            new Pose2d(13.942, 2.838, Rotation2d.fromDegrees(120))
+            new Pose2d(13.716, 2.564, Rotation2d.fromDegrees(120)),
+            new Pose2d(13.999, 2.730, Rotation2d.fromDegrees(120))
           },
           7,
           new Pose2d[] {
-            new Pose2d(14.565, 3.833, Rotation2d.fromDegrees(180)),
-            new Pose2d(14.6, 4.205, Rotation2d.fromDegrees(180))
+            new Pose2d(14.655, 3.860, Rotation2d.fromDegrees(180)),
+            new Pose2d(14.655, 4.190, Rotation2d.fromDegrees(180))
           },
           8,
           new Pose2d[] {
-            new Pose2d(13.930, 5.236, Rotation2d.fromDegrees(-120)),
-            new Pose2d(13.654, 5.392, Rotation2d.fromDegrees(-120))
+            new Pose2d(14.001, 5.322, Rotation2d.fromDegrees(-120)),
+            new Pose2d(13.715, 5.487, Rotation2d.fromDegrees(-120))
           },
           9,
           new Pose2d[] {
-            new Pose2d(12.431, 5.452, Rotation2d.fromDegrees(-60)),
-            new Pose2d(12.108, 5.296, Rotation2d.fromDegrees(-60))
+            new Pose2d(12.411, 5.488, Rotation2d.fromDegrees(-60)),
+            new Pose2d(12.122, 5.321, Rotation2d.fromDegrees(-60))
+          },
+          10,
+          new Pose2d[] {
+            new Pose2d(11.470, 4.190, Rotation2d.fromDegrees(0)),
+            new Pose2d(11.470, 3.860, Rotation2d.fromDegrees(0))
+          },
+          11,
+          new Pose2d[] {
+            new Pose2d(12.125, 2.729, Rotation2d.fromDegrees(60)),
+            new Pose2d(12.411, 2.564, Rotation2d.fromDegrees(60))
+          });
+
+  public static final Map<Integer, Pose2d[]> BlueReefTags =
+      Map.of(
+          17,
+          new Pose2d[] {
+            new Pose2d(3.570, 2.765, Rotation2d.fromDegrees(60)),
+            new Pose2d(3.857, 2.599, Rotation2d.fromDegrees(60))
+          },
+          18,
+          new Pose2d[] {
+            new Pose2d(2.935, 4.190, Rotation2d.fromDegrees(0)),
+            new Pose2d(2.935, 3.860, Rotation2d.fromDegrees(0))
+          },
+          19,
+          new Pose2d[] {
+            new Pose2d(3.855, 5.450, Rotation2d.fromDegrees(-60)),
+            new Pose2d(3.570, 5.285, Rotation2d.fromDegrees(-60))
+          },
+          20,
+          new Pose2d[] {
+            new Pose2d(5.406, 5.285, Rotation2d.fromDegrees(-120)),
+            new Pose2d(5.124, 5.451, Rotation2d.fromDegrees(-120))
+          },
+          21,
+          new Pose2d[] {
+            new Pose2d(6.040, 3.860, Rotation2d.fromDegrees(180)),
+            new Pose2d(6.040, 4.190, Rotation2d.fromDegrees(180))
+          },
+          22,
+          new Pose2d[] {
+            new Pose2d(5.122, 2.599, Rotation2d.fromDegrees(120)),
+            new Pose2d(5.406, 2.763, Rotation2d.fromDegrees(120))
           });
 
   public static final Map<Side, Pose2d[]> LeftreefTargets =
@@ -371,18 +414,14 @@ public class Drive extends SubsystemBase {
     return bestTagId;
   }
 
-  PathConstraints constraints =
-      new PathConstraints(2.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+  public Command GoToPose(Pose2d goalPose) {
 
-  public Command GoToPose(Boolean isLeft) {
-
-    Pose2d goal = getTargetPose(isLeft);
     // Create the constraints to use while pathfinding
     PathConstraints constraints =
         new PathConstraints(2.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     // Since AutoBuilder is configured, we can use it to build pathfinding commands
-    return AutoBuilder.pathfindToPose(goal, constraints, 0.0);
+    return AutoBuilder.pathfindToPose(goalPose, constraints, 0.0);
   }
 
   /**

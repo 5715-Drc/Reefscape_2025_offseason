@@ -22,7 +22,7 @@ public class goToReefSideCommand extends Command {
   private final Map<Integer, Pose2d[]> reefTargets; // tagID -> {leftPose, rightPose}
   private final Side side;
   PathConstraints constraints =
-      new PathConstraints(2.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+      new PathConstraints(2.0, 2.0, Units.degreesToRadians(270), Units.degreesToRadians(360));
 
   private Command inner;
 

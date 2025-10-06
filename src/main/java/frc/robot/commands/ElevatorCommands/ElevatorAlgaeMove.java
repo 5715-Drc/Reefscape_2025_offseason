@@ -19,7 +19,7 @@ public class ElevatorAlgaeMove extends SequentialCommandGroup {
     addRequirements(elevator, hood, gripper);
     addCommands(new InstantCommand(() -> hood.goToPositionMotionMagic(hoodPoition)));
     addCommands(new InstantCommand(() -> elevator.goToPositionMotionMagic(elevatorPosition)));
-    addCommands(new InstantCommand(() -> gripper.GripperMove(-0.8)));
+    addCommands(new InstantCommand(() -> gripper.GripperMove(-1)));
     addCommands(new WaitUntilCommand(() -> gripper.getGripperTorque() < -70));
     addCommands(new InstantCommand(() -> gripper.GripperMove(-0.2)));
   }

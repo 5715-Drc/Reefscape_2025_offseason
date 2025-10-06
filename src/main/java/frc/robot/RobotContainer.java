@@ -98,13 +98,14 @@ public class RobotContainer {
 
   public enum ElevatorState {
     OFFSET(0, 2.5),
+    CORAL_READY(0, 0),
     CORAL_L1(3.75, 5.2),
     CORAL_L2(8.9, 0.0),
     CORAL_L3(8.9, 9.55),
     CORAL_L4(8.9, 23.3),
     ALGAE_L2(5.8, 6.135),
     ALGAE_L3(5.8, 14.825),
-    ALGAE_NET(10.0, 23.3),
+    ALGAE_NET(15.0, 23.3),
     ALGAE_FLOOR(2.65, -0.5);
 
     public final double hoodPos;
@@ -189,18 +190,10 @@ public class RobotContainer {
 
     // Configure the button bindings
     EnumMap<POVAngle, Command> coralMap = new EnumMap<>(POVAngle.class);
-    coralMap.put(
-        POVAngle.DOWN,
-        new ElevatorCoralMove(ElevatorState.CORAL_L1.hoodPos, ElevatorState.CORAL_L1.elevatorPos));
-    coralMap.put(
-        POVAngle.RIGHT,
-        new ElevatorCoralMove(ElevatorState.CORAL_L2.hoodPos, ElevatorState.CORAL_L2.elevatorPos));
-    coralMap.put(
-        POVAngle.LEFT,
-        new ElevatorCoralMove(ElevatorState.CORAL_L3.hoodPos, ElevatorState.CORAL_L3.elevatorPos));
-    coralMap.put(
-        POVAngle.UP,
-        new ElevatorCoralMove(ElevatorState.CORAL_L4.hoodPos, ElevatorState.CORAL_L4.elevatorPos));
+    coralMap.put(POVAngle.DOWN, new ElevatorCoralMove(ElevatorState.CORAL_L1));
+    coralMap.put(POVAngle.RIGHT, new ElevatorCoralMove(ElevatorState.CORAL_L2));
+    coralMap.put(POVAngle.LEFT, new ElevatorCoralMove(ElevatorState.CORAL_L3));
+    coralMap.put(POVAngle.UP, new ElevatorCoralMove(ElevatorState.CORAL_L4));
 
     EnumMap<POVAngle, Command> algaeMap = new EnumMap<>(POVAngle.class);
     algaeMap.put(
@@ -263,18 +256,24 @@ public class RobotContainer {
     controller
         .x()
         .onTrue(
-            new goToReefSideCommand(drive::getPose, drive.kTagLayout, drive.reefTags, Side.LEFT));
+            new goToReefSideCommand(
+                drive::getPose, drive.kTagLayout, drive.RedReefTags, Side.LEFT));
     controller
         .b()
         .onTrue(
-            new goToReefSideCommand(drive::getPose, drive.kTagLayout, drive.reefTags, Side.RIGHT));
+            new goToReefSideCommand(
+                drive::getPose, drive.kTagLayout, drive.RedReefTags, Side.RIGHT));
 
     controller
         .rightBumper()
         .onTrue(
             new IntakeGround()
                 .andThen(new ElevatorCoralReady().onlyIf(() -> gripper.getGripperTorque() > -30)));
+
     controller.leftBumper().onTrue(new IntakeOffSet());
+    // controller
+    //     .leftBumper()
+    //     .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
     controller
         .back()
