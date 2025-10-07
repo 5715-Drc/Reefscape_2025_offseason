@@ -17,6 +17,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.Autos.RedMidAuto;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands.ElevatorAlgaeMove;
 import frc.robot.commands.ElevatorCommands.ElevatorCoralMove;
@@ -52,6 +55,7 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import java.util.EnumMap;
+import java.util.Map;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -103,9 +107,10 @@ public class RobotContainer {
     CORAL_L2(8.9, 0.0),
     CORAL_L3(8.9, 9.55),
     CORAL_L4(8.9, 23.3),
-    ALGAE_L2(5.8, 6.135),
-    ALGAE_L3(5.8, 14.825),
-    ALGAE_NET(15.0, 23.3),
+    ALGAE_L2(5.8, 5.1),
+    ALGAE_L3(5.8, 14.2),
+    ALGAE_NET(10.0, 24.3),
+    ALGAE_NET_FLIPPED(14.5, 24.3),
     ALGAE_FLOOR(2.65, -0.5);
 
     public final double hoodPos;
@@ -179,6 +184,7 @@ public class RobotContainer {
         "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption("RedMidAuto", new RedMidAuto(drive));
 
     SmartDashboard.putString("Selected Piece", currentGamePiece.toString());
     SmartDashboard.putData("Auto Chooser", autoChooserAuto);
@@ -196,20 +202,10 @@ public class RobotContainer {
     coralMap.put(POVAngle.UP, new ElevatorCoralMove(ElevatorState.CORAL_L4));
 
     EnumMap<POVAngle, Command> algaeMap = new EnumMap<>(POVAngle.class);
-    algaeMap.put(
-        POVAngle.DOWN,
-        new ElevatorAlgaeMove(
-            ElevatorState.ALGAE_FLOOR.hoodPos, ElevatorState.ALGAE_FLOOR.elevatorPos));
-    algaeMap.put(
-        POVAngle.RIGHT,
-        new ElevatorAlgaeMove(ElevatorState.ALGAE_L2.hoodPos, ElevatorState.ALGAE_L2.elevatorPos));
-    algaeMap.put(
-        POVAngle.LEFT,
-        new ElevatorAlgaeMove(ElevatorState.ALGAE_L3.hoodPos, ElevatorState.ALGAE_L3.elevatorPos));
-    algaeMap.put(
-        POVAngle.UP,
-        new ElevatorAlgaeMove(
-            ElevatorState.ALGAE_NET.hoodPos, ElevatorState.ALGAE_NET.elevatorPos));
+    algaeMap.put(POVAngle.DOWN, new ElevatorAlgaeMove(ElevatorState.ALGAE_FLOOR));
+    algaeMap.put(POVAngle.RIGHT, new ElevatorAlgaeMove(ElevatorState.ALGAE_L2));
+    algaeMap.put(POVAngle.LEFT, new ElevatorAlgaeMove(ElevatorState.ALGAE_L3));
+    algaeMap.put(POVAngle.UP, new ElevatorAlgaeMove(ElevatorState.ALGAE_NET));
 
     elevatorCommandMap.put(GamePiece.CORAL, coralMap);
     elevatorCommandMap.put(GamePiece.ALGAE, algaeMap);
@@ -227,6 +223,10 @@ public class RobotContainer {
     return drive;
   }
 
+  public Map<Integer, Pose2d[]> PickReefTags() {
+    if (DriverStation.getAlliance().get() == Alliance.Blue) return drive.BlueReefTags;
+    else return drive.RedReefTags;
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -256,13 +256,11 @@ public class RobotContainer {
     controller
         .x()
         .onTrue(
-            new goToReefSideCommand(
-                drive::getPose, drive.kTagLayout, drive.RedReefTags, Side.LEFT));
+            new goToReefSideCommand(drive::getPose, drive.kTagLayout, PickReefTags(), Side.LEFT));
     controller
         .b()
         .onTrue(
-            new goToReefSideCommand(
-                drive::getPose, drive.kTagLayout, drive.RedReefTags, Side.RIGHT));
+            new goToReefSideCommand(drive::getPose, drive.kTagLayout, PickReefTags(), Side.RIGHT));
 
     controller
         .rightBumper()

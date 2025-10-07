@@ -24,7 +24,7 @@ public class ElevatorCoralReady extends SequentialCommandGroup {
     addCommands(new InstantCommand(() -> hood.goToPositionMotionMagic(0)));
     addCommands(new WaitUntilCommand(() -> hood.getHoodPosition() < 0.5));
     addCommands(new InstantCommand(() -> elevator.goToPositionMotionMagic(-0.3)));
-    addCommands(new WaitUntilCommand(() -> gripper.getGripperTorque() < -50));
+    addCommands(new WaitUntilCommand(() -> gripper.getGripperTorque() < -30));
     addCommands(new InstantCommand(() -> gripper.GripperMove(0)));
     addCommands(new ElevatorCoralMove(RobotContainer.ElevatorState.OFFSET));
   }

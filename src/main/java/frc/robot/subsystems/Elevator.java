@@ -69,6 +69,10 @@ public class Elevator extends SubsystemBase {
     return ElevatorInstance;
   }
 
+  public double getPosition() {
+    return rightMotor.getPosition().getValueAsDouble();
+  }
+
   public void goToPositionMotionMagic(double Goal) {
     positionToRotate = Goal;
     rightMotor.setControl(m_request.withPosition(Goal));

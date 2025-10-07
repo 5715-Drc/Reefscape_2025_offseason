@@ -8,20 +8,19 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Hood;
 
-public class ElevatorAlgaeMove extends SequentialCommandGroup {
+public class ElevatorAlgaeMoveFlipped extends SequentialCommandGroup {
   private final Elevator elevator;
   private final Hood hood;
   private final Gripper gripper;
 
-  public ElevatorAlgaeMove(ElevatorState state) {
+  public ElevatorAlgaeMoveFlipped(ElevatorState state) {
     this.elevator = Elevator.getElevatorInstance();
     this.hood = Hood.getHoodInstance();
     this.gripper = Gripper.getGripperInstance();
     addRequirements(elevator, hood, gripper);
-    addCommands(new InstantCommand(() -> hood.goToPositionMotionMagic(state.hoodPos)));
     addCommands(new InstantCommand(() -> elevator.goToPositionMotionMagic(state.elevatorPos)));
-    addCommands(new InstantCommand(() -> gripper.GripperMove(-1)));
-    addCommands(new WaitUntilCommand(() -> gripper.getGripperTorque() < -50));
-    addCommands(new InstantCommand(() -> gripper.GripperMove(-0.8)));
+    addCommands(new WaitUntilCommand(() -> elevator.getPosition() > 23.5));
+    addCommands(new InstantCommand(() -> hood.goToPositionMotionMagic(state.hoodPos)));
+    addCommands(new WaitUntilCommand(() -> hood.getHoodPosition() > 14));
   }
 }

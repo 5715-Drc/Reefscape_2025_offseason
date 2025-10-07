@@ -24,7 +24,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
@@ -48,8 +47,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -122,19 +119,6 @@ public class Drive extends SubsystemBase {
   public static final AprilTagFieldLayout kTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
-  public enum Side {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F
-  }
-
-  private SendableChooser<Side> sideChooser = new SendableChooser<>();
-
-  public Side currentSide = Side.A;
-
   public Drive(
       GyroIOPigeon2 gyroIO,
       ModuleIO flModuleIO,
@@ -160,7 +144,7 @@ public class Drive extends SubsystemBase {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(2.5, 0.01, 0.0), new PIDConstants(5, 0, 0.07)),
+            new PIDConstants(2, 0.01, 0.0), new PIDConstants(5, 0, 0.07)),
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
@@ -185,22 +169,10 @@ public class Drive extends SubsystemBase {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-
-    sideChooser.setDefaultOption("Side A", Side.A);
-
-    SmartDashboard.putData("Side Chooser", sideChooser);
-    sideChooser.addOption("Side B", Side.B);
-    sideChooser.addOption("Side C", Side.C);
-    sideChooser.addOption("Side D", Side.D);
-    sideChooser.addOption("Side E", Side.E);
-    sideChooser.addOption("Side F", Side.F);
   }
 
   @Override
   public void periodic() {
-
-    currentSide = sideChooser.getSelected();
-
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -262,33 +234,33 @@ public class Drive extends SubsystemBase {
       Map.of(
           6,
           new Pose2d[] {
-            new Pose2d(13.716, 2.564, Rotation2d.fromDegrees(120)),
-            new Pose2d(13.999, 2.730, Rotation2d.fromDegrees(120))
+            new Pose2d(13.695, 2.599, Rotation2d.fromDegrees(120)),
+            new Pose2d(13.978, 2.765, Rotation2d.fromDegrees(120))
           },
           7,
           new Pose2d[] {
-            new Pose2d(14.655, 3.860, Rotation2d.fromDegrees(180)),
-            new Pose2d(14.655, 4.190, Rotation2d.fromDegrees(180))
+            new Pose2d(14.613, 3.860, Rotation2d.fromDegrees(180)),
+            new Pose2d(14.613, 4.190, Rotation2d.fromDegrees(180))
           },
           8,
           new Pose2d[] {
-            new Pose2d(14.001, 5.322, Rotation2d.fromDegrees(-120)),
-            new Pose2d(13.715, 5.487, Rotation2d.fromDegrees(-120))
+            new Pose2d(13.980, 5.287, Rotation2d.fromDegrees(-120)),
+            new Pose2d(13.696, 5.448, Rotation2d.fromDegrees(-120))
           },
           9,
           new Pose2d[] {
-            new Pose2d(12.411, 5.488, Rotation2d.fromDegrees(-60)),
-            new Pose2d(12.122, 5.321, Rotation2d.fromDegrees(-60))
+            new Pose2d(12.428, 5.449, Rotation2d.fromDegrees(-60)),
+            new Pose2d(12.146, 5.282, Rotation2d.fromDegrees(-60))
           },
           10,
           new Pose2d[] {
-            new Pose2d(11.470, 4.190, Rotation2d.fromDegrees(0)),
-            new Pose2d(11.470, 3.860, Rotation2d.fromDegrees(0))
+            new Pose2d(11.511, 4.193, Rotation2d.fromDegrees(0)),
+            new Pose2d(11.511, 3.862, Rotation2d.fromDegrees(0))
           },
           11,
           new Pose2d[] {
-            new Pose2d(12.125, 2.729, Rotation2d.fromDegrees(60)),
-            new Pose2d(12.411, 2.564, Rotation2d.fromDegrees(60))
+            new Pose2d(12.144, 2.766, Rotation2d.fromDegrees(60)),
+            new Pose2d(12.430, 2.600, Rotation2d.fromDegrees(60))
           });
 
   public static final Map<Integer, Pose2d[]> BlueReefTags =
@@ -323,96 +295,6 @@ public class Drive extends SubsystemBase {
             new Pose2d(5.122, 2.599, Rotation2d.fromDegrees(120)),
             new Pose2d(5.406, 2.763, Rotation2d.fromDegrees(120))
           });
-
-  public static final Map<Side, Pose2d[]> LeftreefTargets =
-      Map.of(
-          Side.F,
-          new Pose2d[] {new Pose2d(13.678, 2.646, Rotation2d.fromDegrees(120))},
-          Side.A,
-          new Pose2d[] {new Pose2d(14.565, 3.833, Rotation2d.fromDegrees(180))},
-          Side.B,
-          new Pose2d[] {new Pose2d(13.930, 5.236, Rotation2d.fromDegrees(-120))},
-          Side.C,
-          new Pose2d[] {new Pose2d(12.431, 5.452, Rotation2d.fromDegrees(-60))},
-          Side.D,
-          new Pose2d[] {new Pose2d(11.508, 4.205, Rotation2d.fromDegrees(0))},
-          Side.E,
-          new Pose2d[] {new Pose2d(12.156, 2.766, Rotation2d.fromDegrees(60))});
-
-  public static final Map<Side, Pose2d[]> RightreefTargets =
-      Map.of(
-          Side.F,
-          new Pose2d[] {new Pose2d(13.942, 2.838, Rotation2d.fromDegrees(120))},
-          Side.A,
-          new Pose2d[] {new Pose2d(14.565, 4.193, Rotation2d.fromDegrees(180))},
-          Side.B,
-          new Pose2d[] {new Pose2d(13.654, 5.392, Rotation2d.fromDegrees(-120))},
-          Side.C,
-          new Pose2d[] {new Pose2d(12.108, 5.296, Rotation2d.fromDegrees(-60))},
-          Side.D,
-          new Pose2d[] {new Pose2d(11.496, 3.845, Rotation2d.fromDegrees(0))},
-          Side.E,
-          new Pose2d[] {new Pose2d(12.443, 2.610, Rotation2d.fromDegrees(60))});
-
-  // public int getClosestReefTag(Pose2d robotPose, AprilTagFieldLayout layout) {
-  // double bestDistance = Double.MAX_VALUE;
-  // int bestTagId = -1;
-
-  // // Loop through all tags in the layout
-  // for (AprilTag tag : layout.getTags()) {
-  // // Only consider reef tags you care about
-  // if (!reefTargets.containsKey(tag.ID)) continue;
-
-  // Pose2d tagPose = tag.pose.toPose2d();
-  // double dist =
-  // tagPose.getTranslation().getDistance(robotPose.getTranslation());
-
-  // if (dist < bestDistance) {
-  // bestDistance = dist;
-  // bestTagId = tag.ID;
-  // }
-
-  // System.out.println("robot pose " + robotPose.getTranslation().getX());
-  // System.out.println("Tag " + tag.ID + " dist=" + dist);
-  // }
-
-  // return bestTagId;
-  // }
-
-  public Pose2d getTargetPose(boolean useLeft) {
-    Pose2d[] LeftPoses = LeftreefTargets.get(currentSide);
-    Pose2d[] RightPoses = RightreefTargets.get(currentSide);
-    return useLeft ? LeftPoses[0] : RightPoses[0];
-  }
-
-  public int getClosestReefTag(AprilTagFieldLayout layout, Map<Integer, Pose2d[]> reefTargets) {
-    Pose2d currentPose = poseEstimator.getEstimatedPosition();
-
-    // Ignore the pose if it's still at 0,0
-    if (currentPose.getX() == 0 && currentPose.getY() == 0) {
-      System.out.println("Pose still at 0,0 — skipping tag calculation");
-      return -1;
-    }
-
-    double bestDistSq = Double.MAX_VALUE;
-    int bestTagId = -1;
-
-    for (AprilTag tag : layout.getTags()) {
-      if (!reefTargets.containsKey(tag.ID)) continue;
-
-      Pose2d tagPose = tag.pose.toPose2d();
-      double dx = currentPose.getX() - tagPose.getX();
-      double dy = currentPose.getY() - tagPose.getY();
-      double distSq = dx * dx + dy * dy;
-
-      if (distSq < bestDistSq) {
-        bestDistSq = distSq;
-        bestTagId = tag.ID;
-      }
-    }
-
-    return bestTagId;
-  }
 
   public Command GoToPose(Pose2d goalPose) {
 

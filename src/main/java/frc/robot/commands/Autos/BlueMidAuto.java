@@ -13,18 +13,17 @@ import frc.robot.commands.ElevatorCommands.ElevatorAlgaeMove;
 import frc.robot.commands.ElevatorCommands.ElevatorAlgaeMoveFlipped;
 import frc.robot.commands.ElevatorCommands.ElevatorCoralMove;
 import frc.robot.commands.ElevatorCommands.ElevatorCoralReady;
-import frc.robot.commands.ElevatorCommands.ScoreCommandL2L3L4;
 import frc.robot.commands.OffSetAuto;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.drive.Drive;
 
-public class RedMidAuto extends SequentialCommandGroup {
+public class BlueMidAuto extends SequentialCommandGroup {
   private final Drive drive;
   private final Gripper gripper;
   private final Elevator elevator;
 
-  public RedMidAuto(Drive Drive) {
+  public BlueMidAuto(Drive Drive) {
     this.drive = Drive;
     this.gripper = Gripper.getGripperInstance();
     this.elevator = Elevator.getElevatorInstance();
@@ -43,23 +42,26 @@ public class RedMidAuto extends SequentialCommandGroup {
             new ElevatorCoralMove(ElevatorState.CORAL_L4),
             new WaitCommand(0.4),
             drive.GoToPose(
-                new Pose2d(new Translation2d(11.48, 3.860), new Rotation2d(Math.toRadians(0))))),
-        new ScoreCommandL2L3L4(),
+                new Pose2d(new Translation2d(6.039, 4.190), new Rotation2d(Math.toRadians(180))))),
+        // new ScoreAuto(7),
         new WaitCommand(0.3),
-        drive.GoToPose(
-            new Pose2d(new Translation2d(10.800, 4.025), new Rotation2d(Math.toRadians(0)))),
-        new WaitCommand(0.3),
+        new ParallelCommandGroup(
+            drive.GoToPose(
+                new Pose2d(new Translation2d(6.739, 4.025), new Rotation2d(Math.toRadians(180)))),
+            new WaitCommand(0.3)),
 
         // First Algae
-        new ElevatorAlgaeMove(ElevatorState.ALGAE_L2),
-        new WaitUntilCommand(() -> elevator.getPosition() < ElevatorState.ALGAE_L2.elevatorPos + 1),
-        drive.GoToPose(
-            new Pose2d(new Translation2d(11.511, 4.025), new Rotation2d(Math.toRadians(0)))),
+        new ParallelCommandGroup(
+            new ElevatorAlgaeMove(ElevatorState.ALGAE_L2),
+            drive.GoToPose(
+                new Pose2d(new Translation2d(6.039, 4.025), new Rotation2d(Math.toRadians(180))))),
         new WaitUntilCommand(() -> gripper.getGripperTorque() > -70),
         drive.GoToPose(
-            new Pose2d(new Translation2d(10.800, 4.025), new Rotation2d(Math.toRadians(0)))),
-        drive.GoToPose(
-            new Pose2d(new Translation2d(9.960, 3.085), new Rotation2d(Math.toRadians(0)))),
+            new Pose2d(new Translation2d(6.439, 4.025), new Rotation2d(Math.toRadians(180)))),
+        new ParallelCommandGroup(
+            new ElevatorAlgaeMove(ElevatorState.ALGAE_NET),
+            drive.GoToPose(
+                new Pose2d(new Translation2d(7.540, 4.889), new Rotation2d(Math.toRadians(0))))),
         new ElevatorAlgaeMoveFlipped(ElevatorState.ALGAE_NET_FLIPPED),
         new InstantCommand(() -> gripper.GripperMove(1)),
         new WaitCommand(0.1),
@@ -67,17 +69,16 @@ public class RedMidAuto extends SequentialCommandGroup {
 
         // Second Algea
         drive.GoToPose(
-            new Pose2d(new Translation2d(11.714, 1.699), new Rotation2d(Math.toRadians(60)))),
+            new Pose2d(new Translation2d(5.435, 5.624), new Rotation2d(Math.toRadians(-120)))),
         new ElevatorAlgaeMove(ElevatorState.ALGAE_L3),
         new WaitUntilCommand(() -> elevator.getPosition() > ElevatorState.ALGAE_L3.elevatorPos - 1),
         drive.GoToPose(
-            new Pose2d(new Translation2d(12.284, 2.682), new Rotation2d(Math.toRadians(60)))),
+            new Pose2d(new Translation2d(5.275, 5.364), new Rotation2d(Math.toRadians(-120)))),
         new WaitUntilCommand(() -> gripper.getGripperTorque() > -70),
         drive.GoToPose(
-            new Pose2d(new Translation2d(11.714, 1.699), new Rotation2d(Math.toRadians(60)))),
+            new Pose2d(new Translation2d(5.435, 5.624), new Rotation2d(Math.toRadians(-120)))),
         new WaitCommand(0.1),
-        drive.GoToPose(
-            new Pose2d(new Translation2d(9.960, 1.400), new Rotation2d(Math.toRadians(0)))),
+        drive.GoToPose(new Pose2d(new Translation2d(), new Rotation2d(Math.toRadians(180)))),
         new ElevatorAlgaeMoveFlipped(ElevatorState.ALGAE_NET_FLIPPED),
         new InstantCommand(() -> gripper.GripperMove(1)),
         new WaitCommand(0.3),
