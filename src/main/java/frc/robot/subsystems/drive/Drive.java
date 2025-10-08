@@ -173,6 +173,7 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -278,12 +279,12 @@ public class Drive extends SubsystemBase {
           19,
           new Pose2d[] {
             new Pose2d(3.855, 5.450, Rotation2d.fromDegrees(-60)),
-            new Pose2d(3.570, 5.285, Rotation2d.fromDegrees(-60))
+            new Pose2d(3.569, 5.288, Rotation2d.fromDegrees(-60))
           },
           20,
           new Pose2d[] {
-            new Pose2d(5.406, 5.285, Rotation2d.fromDegrees(-120)),
-            new Pose2d(5.124, 5.451, Rotation2d.fromDegrees(-120))
+            new Pose2d(5.407, 5.284, Rotation2d.fromDegrees(-120)),
+            new Pose2d(5.121, 5.449, Rotation2d.fromDegrees(-120))
           },
           21,
           new Pose2d[] {
@@ -294,6 +295,39 @@ public class Drive extends SubsystemBase {
           new Pose2d[] {
             new Pose2d(5.122, 2.599, Rotation2d.fromDegrees(120)),
             new Pose2d(5.406, 2.763, Rotation2d.fromDegrees(120))
+          });
+
+  public static final Map<Integer, Pose2d[]> Blue2ReefTags =
+      Map.of(
+          17,
+          new Pose2d[] {
+            new Pose2d(3.569, 2.760, Rotation2d.fromDegrees(60)),
+            new Pose2d(2.930, 2.598, Rotation2d.fromDegrees(60))
+          },
+          18,
+          new Pose2d[] {
+            new Pose2d(2.935, 4.190, Rotation2d.fromDegrees(0)),
+            new Pose2d(2.935, 3.859, Rotation2d.fromDegrees(0))
+          },
+          19,
+          new Pose2d[] {
+            new Pose2d(5.402, 5.459, Rotation2d.fromDegrees(-60)),
+            new Pose2d(3.571, 5.284, Rotation2d.fromDegrees(-60))
+          },
+          20,
+          new Pose2d[] {
+            new Pose2d(5.406, 5.294, Rotation2d.fromDegrees(-120)),
+            new Pose2d(5.118, 5.449, Rotation2d.fromDegrees(-120))
+          },
+          21,
+          new Pose2d[] {
+            new Pose2d(6.030, 3.859, Rotation2d.fromDegrees(180)),
+            new Pose2d(6.031, 4.183, Rotation2d.fromDegrees(180))
+          },
+          22,
+          new Pose2d[] {
+            new Pose2d(5.119, 2.596, Rotation2d.fromDegrees(120)),
+            new Pose2d(5.406, 2.755, Rotation2d.fromDegrees(120))
           });
 
   public Command GoToPose(Pose2d goalPose) {

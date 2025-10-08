@@ -9,11 +9,12 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer.ElevatorState;
+import frc.robot.commands.AutoCommands.OffSetAuto;
 import frc.robot.commands.ElevatorCommands.ElevatorAlgaeMove;
 import frc.robot.commands.ElevatorCommands.ElevatorAlgaeMoveFlipped;
 import frc.robot.commands.ElevatorCommands.ElevatorCoralMove;
 import frc.robot.commands.ElevatorCommands.ElevatorCoralReady;
-import frc.robot.commands.OffSetAuto;
+import frc.robot.commands.ElevatorCommands.ScoreCommandL2L3L4;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.drive.Drive;
@@ -43,7 +44,7 @@ public class BlueMidAuto extends SequentialCommandGroup {
             new WaitCommand(0.4),
             drive.GoToPose(
                 new Pose2d(new Translation2d(6.039, 4.190), new Rotation2d(Math.toRadians(180))))),
-        // new ScoreAuto(7),
+        new ScoreCommandL2L3L4(),
         new WaitCommand(0.3),
         new ParallelCommandGroup(
             drive.GoToPose(
@@ -55,7 +56,7 @@ public class BlueMidAuto extends SequentialCommandGroup {
             new ElevatorAlgaeMove(ElevatorState.ALGAE_L2),
             drive.GoToPose(
                 new Pose2d(new Translation2d(6.039, 4.025), new Rotation2d(Math.toRadians(180))))),
-        new WaitUntilCommand(() -> gripper.getGripperTorque() > -70),
+        new WaitUntilCommand(() -> gripper.getGripperTorque() > -50),
         drive.GoToPose(
             new Pose2d(new Translation2d(6.439, 4.025), new Rotation2d(Math.toRadians(180)))),
         new ParallelCommandGroup(
@@ -74,7 +75,7 @@ public class BlueMidAuto extends SequentialCommandGroup {
         new WaitUntilCommand(() -> elevator.getPosition() > ElevatorState.ALGAE_L3.elevatorPos - 1),
         drive.GoToPose(
             new Pose2d(new Translation2d(5.275, 5.364), new Rotation2d(Math.toRadians(-120)))),
-        new WaitUntilCommand(() -> gripper.getGripperTorque() > -70),
+        new WaitUntilCommand(() -> gripper.getGripperTorque() > -50),
         drive.GoToPose(
             new Pose2d(new Translation2d(5.435, 5.624), new Rotation2d(Math.toRadians(-120)))),
         new WaitCommand(0.1),

@@ -117,7 +117,10 @@ public class Robot extends LoggedRobot {
     intake = Intake.getIntakeInstance();
     indexer = Indexer.getIndexerInstance();
 
-    // PathfindingCommand.warmupCommand().schedule();
+    // CommandScheduler.getInstance()
+    //     .onCommandInitialize(command -> System.out.println("Starting: " + command.getName()));
+    // CommandScheduler.getInstance()
+    //     .onCommandFinish(command -> System.out.println("Ending: " + command.getName()));
   }
 
   /** This function is called periodically during all modes. */

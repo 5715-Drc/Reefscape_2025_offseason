@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -99,6 +100,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     SmartDashboard.putNumber(
         "Right elevator position", rightMotor.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("Left elevator position", rightMotor.getPosition().getValueAsDouble());
@@ -106,5 +108,6 @@ public class Elevator extends SubsystemBase {
         "Right elevator Voltage", rightMotor.getMotorVoltage().getValueAsDouble());
     SmartDashboard.putNumber(
         "Left elevator Voltage", leftMotor.getMotorVoltage().getValueAsDouble());
+    double end_time = Timer.getTimestamp();
   }
 }

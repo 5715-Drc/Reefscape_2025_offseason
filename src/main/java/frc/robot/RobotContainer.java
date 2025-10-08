@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -24,10 +23,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.Autos.BlueMidAuto;
 import frc.robot.commands.Autos.RedMidAuto;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ElevatorCommands.ElevatorAlgaeMove;
@@ -127,6 +128,7 @@ public class RobotContainer {
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController SubController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -185,14 +187,11 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption("RedMidAuto", new RedMidAuto(drive));
+    autoChooser.addOption("BlueMidAuto", new BlueMidAuto(drive));
 
     SmartDashboard.putString("Selected Piece", currentGamePiece.toString());
     SmartDashboard.putData("Auto Chooser", autoChooserAuto);
     autoChooserAuto.setDefaultOption("None", null);
-    autoChooserAuto.addOption("M1Rotation", new PathPlannerAuto("M1Rotation"));
-    autoChooserAuto.addOption("M2Rotation", new PathPlannerAuto("M2Rotation"));
-    autoChooserAuto.addOption("M3Rotation", new PathPlannerAuto("M3Rotation"));
-    autoChooserAuto.addOption("Auto1", new PathPlannerAuto("Auto1"));
 
     // Configure the button bindings
     EnumMap<POVAngle, Command> coralMap = new EnumMap<>(POVAngle.class);
@@ -266,12 +265,12 @@ public class RobotContainer {
         .rightBumper()
         .onTrue(
             new IntakeGround()
-                .andThen(new ElevatorCoralReady().onlyIf(() -> gripper.getGripperTorque() > -30)));
+                .andThen(new ElevatorCoralReady().onlyIf(() -> gripper.getGripperTorque() > -50)));
 
     controller.leftBumper().onTrue(new IntakeOffSet());
-    // controller
-    //     .leftBumper()
-    //     .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+
+    SubController.leftBumper()
+        .onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
     controller
         .back()
